@@ -61,9 +61,9 @@ struct EventForm: View {
     var navigationTitle: String {
         switch mode {
         case .add:
-            return "event_form_mode_add"
-        case .edit(let event):
-            return "event_form_mode_edit_prefix \(event.title)"
+            return String(localized: "event_form_mode_add")
+        case .edit:
+            return String(localized: "event_form_mode_edit_prefix")
         }
     }
     
