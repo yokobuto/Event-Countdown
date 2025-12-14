@@ -7,38 +7,80 @@
 
 import SwiftUI
 
+enum FormMode {
+    case add
+    case edit(Event)
+}
+
 struct EventForm: View {
+    
+    let mode: FormMode
+    let onSave: (Event) -> Void
     
     @State private var title: String
     @State private var date: Date
     @State private var textColor: Color
-    
-    init(title: String, date: Date, textColor: Color) {
-        _title = State(initialValue: title)
-        _date = State(initialValue: date)
-        _textColor = State(initialValue: textColor)
+    @Environment(\.dismiss) var dismiss
+
+    init(mode: FormMode, onSave: @escaping (Event) -> Void) {
+        self.mode = mode
+        self.onSave = onSave
+        
+        switch mode {
+        case .add:
+            _title = State(initialValue: "")
+            _date = State(initialValue: Date())
+            _textColor = State(initialValue: .black)
+            
+        case .edit(let event):
+            _title = State(initialValue: event.title)
+            _date = State(initialValue: event.date)
+            _textColor = State(initialValue: event.textColor)
+        }
     }
     
     var body: some View {
-        
         Form {
-            Section{
-                TextField("Bitte geben Sie einen Titel ein", text: $title)
+            Section {
+                TextField("Titel", text: $title)
                 DatePicker("Datum", selection: $date)
                 ColorPicker("Textfarbe", selection: $textColor)
             }
         }
-        
-        Button("Speichern"){
-            
+        .navigationTitle(navigationTitle)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Speichern") {
+                    saveEvent()
+                }
+                .disabled(title.isEmpty)
+            }
         }
-        
-        
-    
-        
     }
-}
 
-#Preview {
-    EventForm(title: "Test", date: Date(), textColor: Color.red)
+    var navigationTitle: String {
+        switch mode {
+        case .add:
+            return "Add Event"
+        case .edit(let event):
+            return "Edit \(event.title)"
+        }
+    }
+    
+    func saveEvent() {
+        let id: UUID
+        
+        switch mode {
+        case .add:
+            id = UUID()
+            
+        case .edit(let event):
+            id = event.id
+        }
+        let finalEvent = Event(id: id, title: title, date: date, textColor: textColor)
+        
+        onSave(finalEvent)
+        dismiss()
+    }
+    
 }
