@@ -42,15 +42,15 @@ struct EventForm: View {
     var body: some View {
         Form {
             Section {
-                TextField("Titel", text: $title)
-                DatePicker("Datum", selection: $date)
-                ColorPicker("Textfarbe", selection: $textColor)
+                TextField("event_form_title_placeholder", text: $title)
+                DatePicker("event_form_date_label", selection: $date)
+                ColorPicker("event_form_color_label", selection: $textColor)
             }
         }
         .navigationTitle(navigationTitle)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("Speichern") {
+                Button("event_form_save_button") {
                     saveEvent()
                 }
                 .disabled(title.isEmpty)
@@ -61,24 +61,21 @@ struct EventForm: View {
     var navigationTitle: String {
         switch mode {
         case .add:
-            return "Add Event"
+            return "event_form_mode_add"
         case .edit(let event):
-            return "Edit \(event.title)"
+            return "event_form_mode_edit_prefix \(event.title)"
         }
     }
     
     func saveEvent() {
         let id: UUID
-        
         switch mode {
         case .add:
             id = UUID()
-            
         case .edit(let event):
             id = event.id
         }
         let finalEvent = Event(id: id, title: title, date: date, textColor: textColor)
-        
         onSave(finalEvent)
         dismiss()
     }
