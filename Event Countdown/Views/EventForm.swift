@@ -48,6 +48,7 @@ struct EventForm: View {
             }
         }
         .navigationTitle(navigationTitle)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("event_form_save_button") {
@@ -64,6 +65,7 @@ struct EventForm: View {
             return String(localized: "event_form_mode_add")
         case .edit:
             return String(localized: "event_form_mode_edit_prefix")
+                .appending(" \(_title.wrappedValue)")
         }
     }
     
