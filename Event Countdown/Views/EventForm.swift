@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum FormMode {
+enum FormMode: Hashable {
     case add
     case edit(Event)
 }

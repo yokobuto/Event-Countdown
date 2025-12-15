@@ -14,32 +14,42 @@ struct EventsView: View {
     var body: some View {
         
         NavigationStack {
-            
             List {
-                ForEach(events) { event in
-                    NavigationLink {
-                        EventForm(mode: .edit(event)) { updatedEvent in
-                            if let index = events.firstIndex(where: { $0.id == updatedEvent.id }) {
-                                events[index] = updatedEvent
-                            }
-                        }
-                    } label: {
+                ForEach(events.sorted()) { event in
+                    NavigationLink(value: FormMode.edit(event)) {
                         EventRow(event: event)
+                    }
+                }
+                .onDelete(perform: deleteEvent)
+            }
+            .navigationTitle("Events")
+            .navigationDestination(for: FormMode.self){ mode in
+                
+                EventForm(mode: mode) { updatedEvent in
+                    
+                    switch mode{
+                        
+                    case .add:
+                        events.append(updatedEvent)
+                    case .edit(let originalEvent):
+                        if let index = events.firstIndex(where: { $0.id == originalEvent.id}){
+                            events[index] = updatedEvent
+                        }
+                    
+                        
                     }
                     
                 }
-                .onDelete(perform: deleteEvent)
                 
             }
-            .navigationTitle("Events")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    NavigationLink {                        EventForm(mode: .add) { newEvent in
-                            events.append(newEvent)
-                        }
-                    } label: {
+                    
+                    NavigationLink(value: FormMode.add){
                         Image(systemName: "plus")
                     }
+                    
+                    
                 }
             }
         }
